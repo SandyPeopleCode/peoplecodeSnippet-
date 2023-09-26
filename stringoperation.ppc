@@ -1,1 +1,33 @@
 
+
+/* Program to find sub string and replace it. */
+/* check for <a> a tag, and make sure it opens in new tab */
+Local string &inputString = "<a href ="Otherpage.com" >Click me </a>";
+Local string &outputString;
+Local integer &startIndex = 1;
+Local integer &tagStartIndex;
+Local integer &tagEndIndex;
+
+While &startIndex > 0
+   &tagStartIndex = Find("<a", &inputString, &startIndex);
+   If &tagStartIndex > 0 Then
+      &tagEndIndex = Find("</a>", &inputString, &tagStartIndex);
+      If &tagEndIndex > 0 Then
+         &outputString = &outputString | Substring(&inputString, &startIndex, &tagStartIndex - &startIndex);
+         
+         Local string &tagContents = Substring(&inputString, &tagStartIndex, &tagEndIndex + 3 - &tagStartIndex);
+         If Find("target=""_blank""", &tagContents) = 0 Then
+            &tagContents = Substitute(&tagContents, ">", " target=""_blank"">");
+         End-If;
+         
+         &outputString = &outputString | &tagContents;
+         &startIndex = &tagEndIndex + 1;
+      Else
+         &outputString = &outputString | Substring(&inputString, &startIndex, Len(&inputString) - &startIndex + 1);
+         &startIndex = 0;
+      End-If;
+   Else
+      &outputString = &outputString | Substring(&inputString, &startIndex, Len(&inputString) - &startIndex + 1);
+      &startIndex = 0;
+   End-If;
+End-While;
